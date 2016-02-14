@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Weavers>
+  <PropertyChanged />
+
   <Costura>
     <Unmanaged32Assemblies>
       SQLite.Interop

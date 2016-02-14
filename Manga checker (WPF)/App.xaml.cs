@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using Manga_checker.Database;
 using Manga_checker.Handlers;
-using Manga_checker.ViewModels;
+using MC.Database;
+using MC.ViewModels;
 
 namespace Manga_checker {
     /// <summary>

@@ -7,13 +7,11 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Manga_checker.Adding;
-using Manga_checker.Database;
 using Manga_checker.Handlers;
 using Manga_checker.Properties;
-using Manga_checker.ViewModels;
-using Manga_checker.ViewModels.Model;
 using MaterialDesignThemes.Wpf;
+using MC.Models;
+using MC.ViewModels.Dialogs;
 
 namespace Manga_checker {
     /// <summary>
@@ -93,7 +91,7 @@ namespace Manga_checker {
 
             // ButtonColorChange();
             if (!File.Exists("MangaDB.sqlite")) {
-                Tools.CreateDb();
+                DialogHost.Show(new SetupDatabaseDialog());
             }
         }
 

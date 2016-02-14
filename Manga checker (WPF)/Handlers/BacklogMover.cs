@@ -1,5 +1,5 @@
 ﻿using System;
-using Manga_checker.Database;
+using MC.Database;
 
 namespace Manga_checker.Handlers {
     internal class BacklogMover {

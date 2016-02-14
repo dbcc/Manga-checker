@@ -92,6 +92,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework.Aero2" />
+    <Reference Include="PropertyChanged, Version=1.50.4.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyChanged.Fody.1.50.4\lib\dotnet\PropertyChanged.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -121,71 +125,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Adding\AdvancedAddDialog.xaml.cs">
-      <DependentUpon>AdvancedAddDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Adding\NormalAddDialog.xaml.cs">
-      <DependentUpon>NormalAddDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Adding\SearchInfo.cs" />
-    <Compile Include="Adding\Sites\mangafox.cs" />
-    <Compile Include="Adding\Sites\mangareader.cs" />
-    <Compile Include="Adding\Sites\mangastream.cs" />
-    <Compile Include="Adding\Sites\webtoons.cs" />
-    <Compile Include="Database\Sqlite.cs" />
     <Compile Include="Handlers\ExceptionHandler.cs" />
-    <Compile Include="Handlers\Tools.cs" />
-    <Compile Include="HistoryWindow.xaml.cs">
-      <DependentUpon>HistoryWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SetupDatabaseDialog.xaml.cs">
-      <DependentUpon>SetupDatabaseDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Sites\MangahereRSS.cs" />
-    <Compile Include="Threads\MainThread.cs" />
-    <Compile Include="ViewModels\AddMenuViewModel.cs" />
-    <Compile Include="Views\AddMenuView.xaml.cs">
-      <DependentUpon>AddMenuView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\SettingView.xaml.cs">
-      <DependentUpon>SettingView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\AdvancedAddViewModel.cs" />
-    <Compile Include="ViewModels\HistoryViewModel.cs" />
-    <Compile Include="ViewModels\Model\MangaModel.cs" />
-    <Compile Include="ConfirmDeleteDialog.xaml.cs">
-      <DependentUpon>ConfirmDeleteDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\ActionCommand.cs" />
     <Compile Include="Handlers\BacklogMover.cs" />
     <Compile Include="Handlers\Base64.cs" />
-    <Compile Include="Handlers\Config.cs" />
     <Compile Include="Handlers\ConnectToServer.cs" />
     <Compile Include="Handlers\DebugText.cs" />
-    <Compile Include="Handlers\GetSource.cs" />
-    <Compile Include="Handlers\OpenSite.cs" />
     <Compile Include="Handlers\StartupInit.cs" />
-    <Compile Include="Sites\BatotoRSS.cs" />
-    <Compile Include="Handlers\RSSReader.cs" />
-    <Compile Include="Sites\WebtoonsRSS.cs" />
-    <Compile Include="Sites\YomangaRSS.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\NormalAddViewModel.cs" />
-    <Compile Include="ViewModels\SettingViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Page Include="Adding\AdvancedAddDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Adding\NormalAddDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Assets\Colors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,14 +160,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ConfirmDeleteDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="HistoryWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -234,25 +176,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SetupDatabaseDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AddMenuView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SettingView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sites\KissmangaHTML.cs" />
-    <Compile Include="Sites\MangafoxRSS.cs" />
-    <Compile Include="Sites\MangareaderHTML.cs" />
-    <Compile Include="Sites\MangastreamRSS.cs" />
-    <Compile Include="Handlers\ParseFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -309,6 +234,57 @@
   <ItemGroup>
     <EmbeddedResource Include="costura32\SQLite.Interop.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MC.BatotoRSS\MC.BatotoRSS.csproj">
+      <Project>{1af747d9-a771-4b31-adc4-87ed014baa7a}</Project>
+      <Name>MC.BatotoRSS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Database\MC.Database.csproj">
+      <Project>{95dc8ee0-4275-4144-9b05-6021e713197f}</Project>
+      <Name>MC.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Mangafox\MC.Mangafox.csproj">
+      <Project>{524bff2b-5953-4a9a-9822-8f295de9786a}</Project>
+      <Name>MC.Mangafox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Mangahere\MC.Mangahere.csproj">
+      <Project>{0644569b-ba46-48b3-99bf-b2e6bb2e83e3}</Project>
+      <Name>MC.Mangahere</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Mangareader\MC.Mangareader.csproj">
+      <Project>{f3ab6804-37c1-4618-b337-2c3bdb404846}</Project>
+      <Name>MC.Mangareader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Mangastream\MC.Mangastream.csproj">
+      <Project>{ae1e2e2d-e4b0-4964-95f9-578a3091fa77}</Project>
+      <Name>MC.Mangastream</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Models\MC.Models.csproj">
+      <Project>{D08460EE-B2EC-4E1E-8B95-FD1473A64265}</Project>
+      <Name>MC.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Threads\MC.Threads.csproj">
+      <Project>{6bb0908f-6475-4d9b-b000-27070b907582}</Project>
+      <Name>MC.Threads</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Tools\MC.Tools.csproj">
+      <Project>{08ef0dd1-020e-419a-8f9c-3c959a3c1631}</Project>
+      <Name>MC.Tools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.ViewModels\MC.ViewModels.csproj">
+      <Project>{0bd0dd70-9316-424c-9278-6e55b0bd1efa}</Project>
+      <Name>MC.ViewModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Webtoons\MC.Webtoons.csproj">
+      <Project>{ab635ad2-3e17-4f4c-9a13-6869d0300fed}</Project>
+      <Name>MC.Webtoons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MC.Yomanga\MC.Yomanga.csproj">
+      <Project>{d4c90895-3fcb-4c29-a2ac-40ce26c6dad2}</Project>
+      <Name>MC.Yomanga</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release copy /B /Y /V "$(TargetPath)" "D:\Development\visual studio 2015\Manga checker.exe"</PostBuildEvent>
@@ -319,11 +295,11 @@
       <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets'))" />
     <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets'))" />
   </Target>
-  <Import Project="..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets')" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.2.0.0-beta0018\build\Costura.Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

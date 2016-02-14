@@ -3,10 +3,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:p="clr-namespace:Manga_checker.Properties"
-    xmlns:manga="clr-namespace:Manga_checker.Views"
+    xmlns:p="clr-namespace:MC.Threads.Properties;assembly=MC.Threads"
+    xmlns:dd="clr-namespace:MC.Database.Properties;assembly=MC.Database"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:viewModel="clr-namespace:Manga_checker.ViewModels" x:Name="window"
+    xmlns:views="clr-namespace:MC.ViewModels.Views;assembly=MC.ViewModels"
+    xmlns:viewModels="clr-namespace:MC.ViewModels;assembly=MC.ViewModels"
+    x:Name="Window"
     x:Class="Manga_checker.MainWindow"
     mc:Ignorable="d"
     Title="Manga Checker" BorderThickness="1" WindowStartupLocation="CenterScreen" MinWidth="700" MinHeight="520"
@@ -16,7 +18,7 @@
     TextElement.FontWeight="Medium"
     TextElement.FontSize="14"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    d:DataContext="{d:DesignInstance {x:Type viewModel:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <materialDesign:DialogHost>
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}"
                                    LeftDrawerBackground="{DynamicResource MainBgColor}">
@@ -126,7 +128,7 @@
                                                                  Margin="0, -5">
                                             <StackPanel>
                                                 <Button Height="30"
-                                                        Command="{Binding RefreshMangaCommand}"
+                                                        Command="{Binding  DataContext.RefreshMangaCommand, ElementName=Window}"
                                                         Style="{DynamicResource MaterialDesignFlatButton}"
                                                         HorizontalContentAlignment="Left"
                                                         Foreground="{DynamicResource Green}">
@@ -135,20 +137,20 @@
                                                 <Separator IsEnabled="False" Visibility="{Binding Separator}" />
                                                 <ItemsControl ItemsSource="{Binding Buttons}" />
                                                 <Separator IsEnabled="False" Visibility="{Binding Separator}" />
-                                                <Button Command="{Binding PlusChapterCommand}" Height="30"
+                                                <Button Command="{Binding  DataContext.PlusChapterCommand, ElementName=Window}" Height="30"
                                                         Style="{DynamicResource MaterialDesignFlatButton}"
                                                         HorizontalContentAlignment="Left"
                                                         Foreground="{DynamicResource Green}">
                                                     + 1
                                                 </Button>
-                                                <Button Command="{Binding MinusChapterCommand}" Height="30"
+                                                <Button Command="{Binding  DataContext.MinusChapterCommand, ElementName=Window}" Height="30"
                                                         Style="{DynamicResource MaterialDesignFlatButton}"
                                                         HorizontalContentAlignment="Left" Foreground="Crimson">
                                                     - 1
                                                 </Button>
                                                 <Separator IsEnabled="False" />
                                                 <Button
-                                                    Command="{Binding DataContext.DeleteMangaCommand, ElementName=window}"
+                                                    Command="{Binding DataContext.DeleteMangaCommand, ElementName=Window}"
                                                     Height="30"
                                                     Style="{DynamicResource MaterialDesignFlatButton}"
                                                     HorizontalContentAlignment="Left" Foreground="Crimson">
@@ -167,20 +169,20 @@
                                           Visibility="{Binding DebugVisibility}" VerticalAlignment="Stretch"
                                           materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <TextBox TextChanged="DebugTextBox_TextChanged" x:Name="DebugTextBox"
-                             Text="{Binding Debug, Source={x:Static p:Settings.Default}}" TextWrapping="Wrap"
+                             Text="{Binding Debug, Source={x:Static dd:Settings.Default}}" TextWrapping="Wrap"
                              Visibility="{Binding DebugVisibility}" Padding="5" />
                 </materialDesign:ColorZone>
                 <!--Add Manga Panel-->
                 <materialDesign:ColorZone Margin="10" Grid.Row="2" Background="{DynamicResource AccentBg}"
                                           Visibility="{Binding AddVisibility}" VerticalAlignment="Stretch"
                                           materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                    <manga:AddMenuView />
+                    <views:AddMenuView />
                 </materialDesign:ColorZone>
                 <!--Settings Panel-->
                 <materialDesign:ColorZone Margin="10" Grid.Row="2" Background="{DynamicResource AccentBg}"
                                           Visibility="{Binding SettingsVisibility}" VerticalAlignment="Stretch"
                                           materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                    <manga:SettingView x:Name="settingUserControl" />
+                    <views:SettingView x:Name="settingUserControl" />
                 </materialDesign:ColorZone>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"
                             Height="30">
