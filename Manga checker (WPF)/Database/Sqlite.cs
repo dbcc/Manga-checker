@@ -61,7 +61,7 @@ namespace Manga_checker.Database {
 	                        'last_update'	datetime NOT NULL DEFAULT (datetime()),
 	                        'link'	varchar(200),
 	                        'rss_url'	varchar(200),
-                            `new`	INTEGER DEFAULT 0
+                            'new'	INTEGER DEFAULT 0
                         );";
 
                     // var sql =
@@ -205,7 +205,6 @@ namespace Manga_checker.Database {
                             }
                         }
                     }
-
                     mDbConnection.Close();
                 }
             }
@@ -338,7 +337,8 @@ namespace Manga_checker.Database {
 	                    'chapter'	varchar(200) NOT NULL,
 	                    'last_update'	datetime NOT NULL DEFAULT (datetime()),
 	                    'link'	varchar(200),
-	                    'rss_url'	varchar(200)
+	                    'rss_url'	varchar(200),
+                        'new'	INTEGER DEFAULT 0
                     );";
 
                     // var sql =
