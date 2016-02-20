@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Manga_checker.Properties;
+using MC.Database;
 using Newtonsoft.Json.Linq;
 
 namespace Manga_checker.Handlers {

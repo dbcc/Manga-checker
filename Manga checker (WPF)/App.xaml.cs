@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using Manga_checker.Handlers;
-using Manga_checker.ViewModels;
+using MC.Database;
+using MC.ViewModels;
 
 namespace Manga_checker {
     /// <summary>
@@ -11,6 +13,9 @@ namespace Manga_checker {
         private void AppStartup(object sender, StartupEventArgs args) {
             if (!Debugger.IsAttached)
                 ExceptionHandler.AddGlobalHandlers();
+
+            if (File.Exists("MangaDB.sqlite"))
+                Sqlite.UpdateDatabase();
             var mainWindow = new MainWindow {
                 DataContext = new MainWindowViewModel()
             };

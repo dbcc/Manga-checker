@@ -7,12 +7,11 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Manga_checker.Adding;
-using Manga_checker.Database;
 using Manga_checker.Handlers;
 using Manga_checker.Properties;
-using Manga_checker.ViewModels;
 using MaterialDesignThemes.Wpf;
+using MC.Models;
+using MC.ViewModels.Dialogs;
 
 namespace Manga_checker {
     /// <summary>
@@ -35,24 +34,6 @@ namespace Manga_checker {
             InitializeComponent();
             Settings.Default.Debug = "Debug shit goes in here!\n";
             StartupInit.Setup();
-        }
-
-        private void backlogaddbtn_Click(object sender, RoutedEventArgs e) {
-            ParseFile.AddMangatoBacklog("backlog", backlognamebox.Text, backlogchapterbox.Text);
-            if (Sqlite.GetMangaNameList("backlog").Contains(backlognamebox.Text)) {
-                Sqlite.UpdateManga(
-                    "backlog",
-                    backlognamebox.Text,
-                    backlogchapterbox.Text,
-                    "placeholder",
-                    DateTime.Now);
-            }
-            else {
-                Sqlite.AddManga("backlog", backlognamebox.Text, backlogchapterbox.Text, "placeholder", DateTime.Now);
-            }
-
-            backlognamebox.Text = string.Empty;
-            backlogchapterbox.Text = string.Empty;
         }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e) {
@@ -110,7 +91,7 @@ namespace Manga_checker {
 
             // ButtonColorChange();
             if (!File.Exists("MangaDB.sqlite")) {
-                Tools.CreateDb();
+                DialogHost.Show(new SetupDatabaseDialog());
             }
         }
 
@@ -121,17 +102,7 @@ namespace Manga_checker {
         private void MiniBtn_Click(object sender, RoutedEventArgs e) {
             WindowState = WindowState.Minimized;
         }
-
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e) {
-            var regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-
-        private void SearchBtn_Click(object sender, RoutedEventArgs e) {
-            var d = new NormalAddDialog {DataContext = new NormalAddViewModel()};
-            DialogHost.Show(d);
-        }
-
+        
         private void TopMostBtn_Click(object sender, RoutedEventArgs e) {
             Topmost = Topmost == false;
         }

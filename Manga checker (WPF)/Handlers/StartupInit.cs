@@ -1,4 +1,5 @@
 ﻿using Manga_checker.Properties;
+using MC.Database;
 
 namespace Manga_checker.Handlers {
     internal class StartupInit {

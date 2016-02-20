@@ -3,10 +3,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:p="clr-namespace:Manga_checker.Properties"
-    xmlns:manga="clr-namespace:Manga_checker.UserControls"
+    xmlns:p="clr-namespace:MC.Threads.Properties;assembly=MC.Threads"
+    xmlns:dd="clr-namespace:MC.Database.Properties;assembly=MC.Database"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:viewModel="clr-namespace:Manga_checker.ViewModels" x:Name="window"
+    xmlns:views="clr-namespace:MC.ViewModels.Views;assembly=MC.ViewModels"
+    xmlns:viewModels="clr-namespace:MC.ViewModels;assembly=MC.ViewModels"
+    x:Name="Window"
     x:Class="Manga_checker.MainWindow"
     mc:Ignorable="d"
     Title="Manga Checker" BorderThickness="1" WindowStartupLocation="CenterScreen" MinWidth="700" MinHeight="520"
@@ -16,7 +18,7 @@
     TextElement.FontWeight="Medium"
     TextElement.FontSize="14"
     FontFamily="{DynamicResource MaterialDesignFont}"
-    d:DataContext="{d:DesignInstance {x:Type viewModel:MainWindowViewModel}, IsDesignTimeCreatable=False}">
+    d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=False}">
     <materialDesign:DialogHost>
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}"
                                    LeftDrawerBackground="{DynamicResource MainBgColor}">
@@ -32,15 +34,15 @@
                             Home
                         </Button>
                         <Separator IsEnabled="False" Margin="0,2,1,2" />
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="AddBtn" Content="Add Manga"
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" Content="Add Manga"
                                 Margin="0" VerticalAlignment="Top" BorderThickness="0"
                                 Command="{Binding AddMangaCommand}"
                                 VerticalContentAlignment="Center" HorizontalContentAlignment="Left" />
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="TopMostBtn"
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" 
                                 Content="Always On Top" BorderThickness="0" Click="TopMostBtn_Click"
                                 VerticalContentAlignment="Center" HorizontalContentAlignment="Left" />
                         <Separator IsEnabled="False" Margin="0,2,1,2" />
-                        <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="SettingsBtn"
+                        <Button Style="{DynamicResource MaterialDesignFlatButton}" 
                                 Content="Settings"
                                 BorderThickness="0" Command="{Binding SettingsCommand}"
                                 VerticalContentAlignment="Center"
@@ -62,164 +64,134 @@
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
 
-                <materialDesign:ColorZone Background="{DynamicResource AccentBg}" Grid.Row="0">
+                <materialDesign:ColorZone Background="{DynamicResource MainBgColor}" Grid.Row="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <ToggleButton Style="{DynamicResource MaterialDesignHamburgerToggleButton}"
+                                          x:Name="MenuToggleButton" IsChecked="{Binding MenuToggleButton, Mode=TwoWay}"
+                                          HorizontalAlignment="Left" VerticalAlignment="Center" />
+                            <Button Background="Transparent" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                    ToolTip="Start/Stop" Command="{Binding StartStopCommand}" BorderThickness="0"
+                                    Padding="10,4">
+                                <materialDesign:PackIcon Kind="{Binding PausePlayButtonIcon, FallbackValue=Pause}" />
+                            </Button>
+                            <Button Background="Transparent" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                    Command="{Binding RefreshCommand}"
+                                    ToolTip="Re-Check" BorderThickness="0" Padding="10,4">
+                                <materialDesign:PackIcon Kind="Refresh" />
+                            </Button>
+                        </StackPanel>
                         <TextBlock Text="{Binding CurrentSite}" Grid.Column="0"
                                    Style="{DynamicResource MaterialDesignTitleTextBlock}"
                                    VerticalAlignment="Center" HorizontalAlignment="Center" Grid.ColumnSpan="3" />
-                        <Button Grid.Column="1" x:Name="MiniBtn" Click="MiniBtn_Click" Background="Transparent"
+                        <Button Grid.Column="1" Click="MiniBtn_Click" Background="Transparent"
                                 BorderThickness="0"
                                 Foreground="{DynamicResource PrimaryHueMidBrush}" Content="_" />
-                        <Button Grid.Column="2" x:Name="CloseBtn" Content="X" Click="CloseBtn_Click"
+                        <Button Grid.Column="2" Content="X" Click="CloseBtn_Click"
                                 Background="Transparent" BorderThickness="0"
                                 Foreground="{DynamicResource PrimaryHueMidBrush}" />
                     </Grid>
                 </materialDesign:ColorZone>
+                <!--DataGrid Panel-->
                 <materialDesign:ColorZone Grid.Row="2" Margin="10" materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                                          Background="{DynamicResource AccentBg}">
-                    <Grid>
-                        <DataGrid x:Name="DataGridMangas" ItemsSource="{Binding Mangas}"
-                                  AutoGenerateColumns="False"
-                                  MouseDoubleClick="DataGridMangas_MouseDoubleClick" IsReadOnly="True"
-                                  SelectionMode="Single"
-                                  Background="#FF1B1B1B" Visibility="{Binding DataGridVisibility}"
-                                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF272727"
-                                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
-                            <DataGrid.RowStyle>
-                                <Style TargetType="DataGridRow">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding New}" Value="1">
-                                            <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}" />
-                                            <Setter Property="Foreground" Value="Black" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding New}" Value="0">
-                                            <Setter Property="Background" Value="Transparent" />
-                                            <Setter Property="Foreground" Value="White" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGrid.RowStyle>
-                            <!--<DataGrid.ContextMenu>
-                                <ContextMenu Background="{DynamicResource AccentBg}" />
-                            </DataGrid.ContextMenu>-->
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn>
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <materialDesign:PackIcon Kind="Book" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <materialDesign:MaterialDataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <materialDesign:MaterialDataGridTextColumn Header="Chapter" Binding="{Binding Chapter}" />
-                                <materialDesign:MaterialDataGridTextColumn Header="Site" Binding="{Binding Site}" />
-                                <materialDesign:MaterialDataGridTextColumn Header="Updated" Binding="{Binding Date}"
-                                                                           Width="*" />
-                                <DataGridTemplateColumn>
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges"
-                                                                     Margin="0, -5">
-                                                <StackPanel>
-                                                    <Button Height="30"
-                                                            Command="{Binding RefreshMangaCommand}"
-                                                            Style="{DynamicResource MaterialDesignFlatButton}"
-                                                            HorizontalContentAlignment="Left"
-                                                            Foreground="{DynamicResource Green}">
-                                                        Refresh
-                                                    </Button>
-                                                    <Separator IsEnabled="False" Visibility="{Binding Separator}" />
-                                                    <ItemsControl ItemsSource="{Binding Buttons}" />
-                                                    <Separator IsEnabled="False" Visibility="{Binding Separator}" />
-                                                    <Button Command="{Binding PlusChapterCommand}" Height="30"
-                                                            Style="{DynamicResource MaterialDesignFlatButton}"
-                                                            HorizontalContentAlignment="Left"
-                                                            Foreground="{DynamicResource Green}">
-                                                        + 1
-                                                    </Button>
-                                                    <Button Command="{Binding MinusChapterCommand}" Height="30"
-                                                            Style="{DynamicResource MaterialDesignFlatButton}"
-                                                            HorizontalContentAlignment="Left" Foreground="Crimson">
-                                                        - 1
-                                                    </Button>
-                                                    <Separator IsEnabled="False" />
-                                                    <Button
-                                                        Command="{Binding DataContext.DeleteMangaCommand, ElementName=window}"
-                                                        Height="30"
+                                          Background="{DynamicResource AccentBg}"
+                                          Visibility="{Binding DataGridVisibility}">
+                    <DataGrid x:Name="DataGridMangas" ItemsSource="{Binding Mangas}"
+                              AutoGenerateColumns="False"
+                              MouseDoubleClick="DataGridMangas_MouseDoubleClick" IsReadOnly="True"
+                              SelectionMode="Single"
+                              Background="#FF1B1B1B"
+                              GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#FF272727"
+                              SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon Kind="Book" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <materialDesign:MaterialDataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                            <materialDesign:MaterialDataGridTextColumn Header="Chapter" Binding="{Binding Chapter}" />
+                            <materialDesign:MaterialDataGridTextColumn Header="Site" Binding="{Binding Site}" />
+                            <materialDesign:MaterialDataGridTextColumn Header="Updated" Binding="{Binding Date}"
+                                                                       Width="*" />
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges"
+                                                                 Margin="0, -5">
+                                            <StackPanel>
+                                                <Button Height="30"
+                                                        Command="{Binding  DataContext.RefreshMangaCommand, ElementName=Window}"
+                                                        Style="{DynamicResource MaterialDesignFlatButton}"
+                                                        HorizontalContentAlignment="Left"
+                                                        Foreground="{DynamicResource Green}">
+                                                    Refresh
+                                                </Button>
+                                                <Separator IsEnabled="False" Visibility="{Binding Separator}" />
+                                                <ItemsControl ItemsSource="{Binding Buttons}" />
+                                                <Separator IsEnabled="False" Visibility="{Binding Separator}" />
+                                                <Button Command="{Binding  DataContext.PlusChapterCommand, ElementName=Window}" Height="30"
+                                                        Style="{DynamicResource MaterialDesignFlatButton}"
+                                                        HorizontalContentAlignment="Left"
+                                                        Foreground="{DynamicResource Green}">
+                                                    + 1
+                                                </Button>
+                                                <Button Command="{Binding  DataContext.MinusChapterCommand, ElementName=Window}" Height="30"
                                                         Style="{DynamicResource MaterialDesignFlatButton}"
                                                         HorizontalContentAlignment="Left" Foreground="Crimson">
-                                                        Delete
-                                                    </Button>
-                                                </StackPanel>
-                                            </materialDesign:PopupBox>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                        <TextBox TextChanged="DebugTextBox_TextChanged" x:Name="DebugTextBox"
-                                 Text="{Binding Debug, Source={x:Static p:Settings.Default}}" TextWrapping="Wrap"
-                                 Visibility="{Binding DebugVisibility}" Padding="5" />
-                        <StackPanel x:Name="AddPanel" Margin="0"
-                                    Visibility="{Binding AddVisibility}">
-                            <Label x:Name="label_Copy" Content="Add New Mangs" HorizontalAlignment="Left"
-                                   VerticalAlignment="Top"
-                                   FontSize="16" FontFamily="Segoe WP Semibold" Margin="0,3,0,0" />
-                            <StackPanel Orientation="Horizontal">
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="SearchBtn"
-                                        Content="NORMAL"
-                                        Click="SearchBtn_Click" Margin="0,3,0,0" />
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}" IsEnabled="False"
-                                        Content="ADVANCED"
-                                        Click="SearchBtn_Click" Margin="0,3,0,0" />
-                            </StackPanel>
-                            <Separator />
-                            <!--backlog controls-->
-                            <Label x:Name="label_Copy2" Content="Backlog" HorizontalAlignment="Left"
-                                   VerticalAlignment="Top"
-                                   FontSize="16" FontFamily="Segoe WP Semibold" Margin="0,3,0,0" />
-                            <Separator />
-                            <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Height="35" VerticalAlignment="Top">
-                                <Label Content="name" Height="35" Margin="0" Width="60" VerticalAlignment="Center"
-                                       FontSize="16"
-                                       VerticalContentAlignment="Center" />
-                                <TextBox x:Name="backlognamebox"
-                                         Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
-                                         materialDesign:TextFieldAssist.Hint="Name"
-                                         Width="200" VerticalContentAlignment="Center" Height="35"
-                                         Background="{DynamicResource AccentBg}" />
-                                <Label Content="Chapter" Height="35" Margin="5,0,0,0" FontSize="16"
-                                       VerticalContentAlignment="Center" />
-                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                         materialDesign:TextFieldAssist.Hint="Chapter" x:Name="backlogchapterbox"
-                                         PreviewTextInput="NumberValidationTextBox" MaxLines="1" Width="203"
-                                         VerticalContentAlignment="Center" />
-                            </StackPanel>
-                            <Button Style="{DynamicResource MaterialDesignFlatButton}" x:Name="backlogaddbtn"
-                                    Content="Add to Backlog" Click="backlogaddbtn_Click" Margin="0,3,0,0" />
-                        </StackPanel>
-                    </Grid>
+                                                    - 1
+                                                </Button>
+                                                <Separator IsEnabled="False" />
+                                                <Button
+                                                    Command="{Binding DataContext.DeleteMangaCommand, ElementName=Window}"
+                                                    Height="30"
+                                                    Style="{DynamicResource MaterialDesignFlatButton}"
+                                                    HorizontalContentAlignment="Left" Foreground="Crimson">
+                                                    Delete
+                                                </Button>
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </materialDesign:ColorZone>
+                <!--Debug Panel-->
+                <materialDesign:ColorZone Margin="10" Grid.Row="2" Background="{DynamicResource AccentBg}"
+                                          Visibility="{Binding DebugVisibility}" VerticalAlignment="Stretch"
+                                          materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <TextBox TextChanged="DebugTextBox_TextChanged" x:Name="DebugTextBox"
+                             Text="{Binding Debug, Source={x:Static dd:Settings.Default}}" TextWrapping="Wrap"
+                             Visibility="{Binding DebugVisibility}" Padding="5" />
+                </materialDesign:ColorZone>
+                <!--Add Manga Panel-->
+                <materialDesign:ColorZone Margin="10" Grid.Row="2" Background="{DynamicResource AccentBg}"
+                                          Visibility="{Binding AddVisibility}" VerticalAlignment="Stretch"
+                                          materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <views:AddMenuView />
+                </materialDesign:ColorZone>
+                <!--Settings Panel-->
                 <materialDesign:ColorZone Margin="10" Grid.Row="2" Background="{DynamicResource AccentBg}"
                                           Visibility="{Binding SettingsVisibility}" VerticalAlignment="Stretch"
                                           materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                    <manga:SettingUserControl x:Name="settingUserControl" />
+                    <views:SettingView x:Name="settingUserControl" />
                 </materialDesign:ColorZone>
-                <!--Settings Panel-->
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"
                             Height="30">
                     <Label Content="{Binding ThreadStatus}" VerticalAlignment="Center" />
-                    <Label x:Name="StatusLb" Content="{Binding StatusLabel, Source={x:Static p:Settings.Default}}"
+                    <Label Content="{Binding StatusLabel, Source={x:Static p:Settings.Default}}"
                            VerticalAlignment="Center" />
                 </StackPanel>
 
-                <Label x:Name="CounterLbl" Content="{Binding CounterLabel, Source={x:Static p:Settings.Default}}"
+                <Label  Content="{Binding CounterLabel, Source={x:Static p:Settings.Default}}"
                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,20,0"
                        FontWeight="Bold" Grid.Row="3" />
 
@@ -227,86 +199,64 @@
                                           materialDesign:ShadowAssist.ShadowDepth="Depth1">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="100" />
                         </Grid.ColumnDefinitions>
-                        <WrapPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
-                            <Button Command="{Binding FillListCommand}" x:Name="AllBtn" Content="ALL"
+                        <WrapPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center">
+                            <Button Command="{Binding FillListCommand}" Content="ALL"
                                     HorizontalContentAlignment="Left" Background="Transparent" BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}" />
-                            <Button Command="{Binding FillMangareaderCommand}" x:Name="MangareaderBtn"
+                            <Button Command="{Binding FillMangareaderCommand}"
                                     Content="MANGAREADER" HorizontalContentAlignment="Left"
                                     Background="Transparent" BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding  DataContext.MangareadervVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillMangafoxCommand}" x:Name="MangafoxBtn" Content="MANGAFOX"
+                            <Button Command="{Binding FillMangafoxCommand}" Content="MANGAFOX"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding  DataContext.MangafoxVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillMangastreamCommand}" x:Name="MangastreamBtn"
+                            <Button Command="{Binding FillMangahereCommand}" Content="MANGAHERE"
+                                    HorizontalContentAlignment="Left" Background="Transparent"
+                                    BorderThickness="0"
+                                    Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                    Visibility="{Binding  DataContext.MangahereVisibility, ElementName=settingUserControl}" />
+                            <Button Command="{Binding FillMangastreamCommand}"
                                     Content="MANGASTREAM" HorizontalContentAlignment="Left"
                                     Background="Transparent" BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding DataContext.MangastreamVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillBatotoCommand}" x:Name="BatotoBtn" Content="BATOTO"
+                            <Button Command="{Binding FillBatotoCommand}" Content="BATOTO"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding DataContext.BatotoVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillKissmangaCommand}" x:Name="KissmangaBtn" Content="KISSMANGA"
+                            <Button Command="{Binding FillKissmangaCommand}" Content="KISSMANGA"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding DataContext.KissmangaVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillWebtoonsCommand}" x:Name="WebtoonsBtn" Content="WEBTOONS"
+                            <Button Command="{Binding FillWebtoonsCommand}" Content="WEBTOONS"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding DataContext.WebtoonsVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillYoMangaCommand}" x:Name="YomangaBtn" Content="YOMANGA"
+                            <Button Command="{Binding FillYoMangaCommand}" Content="YOMANGA"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}"
                                     Visibility="{Binding DataContext.YoMangaVisibility, ElementName=settingUserControl}" />
-                            <Button Command="{Binding FillBacklogCommand}" x:Name="BacklogBtn" Content="BACKLOG"
+                            <Button Command="{Binding FillBacklogCommand}" Content="BACKLOG"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}" />
-                            <Button Command="{Binding DebugCommand}" x:Name="DebugBtn" Content="DEBUG"
+                            <Button Command="{Binding DebugCommand}" Content="DEBUG"
                                     HorizontalContentAlignment="Left" Background="Transparent"
                                     BorderThickness="0"
                                     Foreground="{DynamicResource PrimaryHueMidBrush}" />
                         </WrapPanel>
-                        <ToggleButton Grid.Column="0" Style="{DynamicResource MaterialDesignHamburgerToggleButton}"
-                                      x:Name="MenuToggleButton" IsChecked="{Binding MenuToggleButton, Mode=TwoWay}"
-                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Grid>
                 </materialDesign:ColorZone>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right"
-                            VerticalAlignment="Bottom" Margin="0,0,10,-20">
-                    <ToggleButton Style="{StaticResource MaterialDesignActionDarkToggleButton}"
-                                  ToolTip="Start/Stop" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                  Margin="0,0,10,0" Command="{Binding StartStopCommand}"
-                                  materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:PackIcon Kind="Pause" />
-                    </ToggleButton>
-                    <Button Style="{DynamicResource MaterialDesignFloatingActionMiniDarkButton}"
-                            Margin="0"
-                            Command="{Binding RefreshCommand}"
-                            ToolTip="Re-Check"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <Viewbox Width="24" Height="24">
-                            <Canvas Width="24" Height="24">
-                                <Path
-                                    Data="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
-                                    Fill="{Binding Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
-                            </Canvas>
-                        </Viewbox>
-                    </Button>
-                </StackPanel>
+
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
